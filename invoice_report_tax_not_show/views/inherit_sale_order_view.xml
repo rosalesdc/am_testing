@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="inherit_sale_order_view_add_field_on_lines" model="ir.ui.view">
+        <field name="name">inherit.sale.order.view.add.field-on.lines</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="after">
+                <field name="price_for_tax_incl" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='amount_untaxed']" position="after">
+                <field name="total_tax_incl" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

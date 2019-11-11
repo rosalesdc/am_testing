@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--Table for invoice lines style-->
+    <template id="report_invoice_tax_not_show" inherit_id="account.report_invoice_document">
+        <xpath expr="//div[@id='total']/div" position="replace">
+            <div t-attf-class="#{'col-5' if report_type != 'html' else 'col-5'} ml-auto pull-right">
+                <table class="table table-sm">
+                    <tr class="border-black o_subtotal">
+                        <td style="font-size:17px; line-height: normal;"><strong>Subtotal</strong></td>
+                        <td class="text-right">
+                            <t t-if="o.show_tax_report">
+                                <span t-field="o.subtotal_not_show" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                            </t>
+                            <t t-else="">
+                                <span t-field="o.amount_untaxed" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                            </t>
+                        </td>
+                    </tr>
+                    <t t-foreach="o._amount_by_group()" t-as="amount_by_group">
+                        <t t-if="o.show_tax_report">
+                            <tr style="border-bottom:1px solid #dddddd;" t-if="amount_by_group[5]">
+                                <t t-if="len(o.tax_line_ids) == 1 and o.amount_untaxed == amount_by_group[2]">
+                                    <td>
+                                        <span t-esc="amount_by_group[0]"/>
+                                        <span>&amp;nbsp;<span>on</span>
+                                            <t t-esc="amount_by_group[4]"/>
+                                        </span>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-esc="amount_by_group[3]"/>
+                                    </td>
+                                </t>
+                                <t t-else="">
+                                    <td><span t-esc="amount_by_group[0]"/></td>
+                                    <td class="text-right">
+                                        <span t-esc="amount_by_group[3]" />
+                                    </td>
+                                </t>
+                            </tr>
+                        </t>
+                        <t t-else="">
+                            <tr style="border-bottom:1px solid #dddddd;">
+                                <t t-if="len(o.tax_line_ids) == 1 and o.amount_untaxed == amount_by_group[2]">
+                                    <td>
+                                        <span t-esc="amount_by_group[0]"/>
+                                        <span>&amp;nbsp;<span>on</span>
+                                            <t t-esc="amount_by_group[4]"/>
+                                        </span>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-esc="amount_by_group[3]"/>
+                                    </td>
+                                </t>
+                                <t t-else="">
+                                    <td><span t-esc="amount_by_group[0]"/></td>
+                                    <td class="text-right">
+                                        <span t-esc="amount_by_group[3]" />
+                                    </td>
+                                </t>
+                            </tr>
+                        </t>
+                    </t>
+                    <tr class="border-black o_total">
+                        <td><strong>Total</strong></td>
+                        <td class="text-right">
+                            <span t-field="o.amount_total"/>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </xpath>
+        <xpath expr="//table[@name='invoice_line_table']/tbody//tr[1]//td[last()]" position="replace">
+             <t t-if="o.show_tax_report">
+                <td class="text-right o_price_total" style="font-size: 14px !important">
+                    <span t-field="line.price_for_tax_incl" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                </td>
+            </t>
+            <t t-else="">
+                <td class="text-right o_price_total" style="font-size: 14px !important">
+                    <span t-field="line.price_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                </td>
+            </t>
+        </xpath>
+        <xpath expr="//table[@name='invoice_line_table']/tbody//tr[1]//td[8]" position="replace">
+             <t t-if="o.show_tax_report">
+                <td t-attf-class="text-left {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}" style="font-size: 14px !important">
+                    <span t-esc="', '.join(map(lambda x: (x.description or x.name), line.invoice_line_tax_ids.filtered(lambda t: t.tax_group_id and t.tax_group_id.show_in_report)))"/>
+                </td>
+            </t>
+            <t t-else="">
+                <td t-attf-class="text-left {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}" style="font-size: 14px !important">
+                    <span t-esc="', '.join(map(lambda x: (x.description or x.name), line.invoice_line_tax_ids))"/>
+                </td>
+            </t>
+         </xpath>
+
+
+    </template>
+
+</odoo>

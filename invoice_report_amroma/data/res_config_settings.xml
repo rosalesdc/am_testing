@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--set multi locations is neccesary before warehouses-->
+        <record id="base.group_user" model="res.groups">
+            <field name="implied_ids"
+                   eval="[(4, ref('sale.group_delivery_invoice_address')),
+                          (4, ref('stock.group_stock_multi_locations')),
+                          (4, ref('stock.group_stock_multi_warehouses'))]" />
+        </record>
+    </data>
+</odoo>

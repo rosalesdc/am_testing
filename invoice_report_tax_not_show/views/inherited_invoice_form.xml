@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo> 
+    <record id="inherited_invoice_form_not_print_tax" model="ir.ui.view">
+        <field name="name">inherited.invoice.form.not.print.tax</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="show_tax_report" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="inherit_account_invoice_tree_view_add_fields_ieps" model="ir.ui.view">
+        <field name="name">inherit.account.invoice.tree.view.add.fields.ieps</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_due']" position="before">
+                <field name="ieps_6"/>
+                <field name="ieps_7"/>
+                <field name="ieps_9"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

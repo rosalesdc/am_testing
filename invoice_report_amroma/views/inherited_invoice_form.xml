@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo> 
+    <record id="inherited_amroma_invoice_form" model="ir.ui.view">
+        <field name="name">inherited.amroma.invoice.form</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="stock_expedition_place" domain="[('company_id', '=', company_id)]" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

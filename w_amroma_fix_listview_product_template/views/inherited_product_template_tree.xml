@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo> 
+        <record id="inherit_stock_product_template_tree_view" model="ir.ui.view">
+            <field name="name">inherit.product.template.stock.tree.view</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="stock.view_stock_product_template_tree"/>
+            <field name="arch" type="xml">
+                <field name="virtual_available" position="before">
+                    <field name="type" invisible="1"/>
+                </field>
+            </field>
+        </record>
+</odoo>

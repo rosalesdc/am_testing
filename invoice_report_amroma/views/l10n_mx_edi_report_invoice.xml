@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--Header of the report-->
+    <template id="report_invoice_document_amroma_header" inherit_id="web.external_layout_standard">
+         <xpath expr="//div[hasclass('header')]" position="replace">
+            <div class="header" style="margin-bottom: 30px;">
+                <style>
+                    .header_titles, .typeOfDoc {
+                        color: #000080;
+                    }
+                    .maillist p {
+                        color: #b4042b;
+                        margin-bottom: 2px;
+                    }
+                    .maillist a {
+                        color: #b4042b;
+                        text-decoration: none;
+                    }
+                    .typeOfDoc strong {
+                        font-size: 14px;
+                    }
+                </style>
+                <div class="row">
+                  <t t-if="doc_model == 'account.invoice'">
+                    <div class="col-4">
+                        <img t-if="company.logo" t-att-src="'data:image/jpeg;base64,%s' % to_text(company.logo)" class="img-responsive"/>
+                    </div>
+                    </t>
+                    <t t-if="doc_model != 'account.invoice'">
+                    <div class="col-1">
+                        <img t-if="company.logo" t-att-src="'data:image/jpeg;base64,%s' % to_text(company.logo)" class="img-responsive"/>
+                    </div>
+                    </t>
+
+                    <t t-if="doc_model == 'account.invoice'">
+                        <div class="col-6" name="company_address">
+                            <ul class="list-unstyled text-center" style="margin-left: 5px;margin-right: 5px;">
+                                <h3><strong><li t-if="company.name"><span class="header_titles" t-field="company.name"/></li></strong></h3>
+                                <li t-if="company.vat"><span t-field="company.vat"/></li>
+                                <li t-if="company.report_header"><span class="header_titles" t-field="company.report_header"/></li>
+                            </ul>
+                        </div>
+                        <div class="col-2 typeOfDoc">
+                            <strong t-if="not o.refund_invoice_id">Factura</strong>
+                            <strong t-if="o.refund_invoice_id">Nota de Crédito</strong>
+                        </div>
+                    </t>
+                    <t t-if="doc_model != 'account.invoice'">
+                        <!--<div class="col-xs-8" name="company_address">
+                            <ul class="list-unstyled text-center" style="margin-left: 5px;margin-right: 5px;">
+                                <h3><strong><li t-if="company.name"><span class="header_titles" t-field="company.name"/></li></strong></h3>
+                                <li t-if="company.vat"><span t-field="company.vat"/></li>
+                                <li t-if="company.report_header"><span class="header_titles" t-field="company.report_header"/></li>
+                            </ul>
+                        </div>-->
+                    </t>
+                </div>
+               <t t-if="doc_model == 'account.invoice'">
+                <div class="row" style="font-size:14px; text-align: justify; line-height: normal;">
+                    <div class="col-4 maillist">
+                        <p><a href="mailto:contacto@amroma.com">contacto@amroma.com</a> (55) 5643 3783</p>
+                        <p><a href="mailto:edomex@amroma.com">edomex@amroma.com</a> (55) 1106 2574</p>
+                        <p><a href="mailto:iztapalapa@amroma.com">iztapalapa@amroma.com</a> (55) 5581 4187</p>
+                    </div>
+                    <div class="col-4 maillist">
+                        <p><a href="mailto:veracruz@amroma.com">veracruz@amroma.com</a> (229)931 32 79</p>
+                        <p><a href="mailto:morelos@amroma.com">morelos@amroma.com</a> (777) 241 67 28</p>
+                        <p><a href="mailto:michoacan@amroma.com">michoacan@amroma.com</a> (55) 70087242</p>
+                    </div>
+                    <div class="col-4 maillist">
+                        <p><a href="mailto:qro@amroma.com">qro@amroma.com</a> (442) 21 34 057</p>
+                        <p><a href="mailto:jalisco@amroma.com">jalisco@amroma.com</a> (55) 2143 1094</p>
+                        <p><a href="mailto:santafe@amroma.com">santafe@amroma.com</a> (55) 2106 0215</p>
+                    </div>
+                </div>
+              </t>
+            </div>
+        </xpath>
+    </template>
+
+    <!--Body of the report-->
+    <template id="report_invoice_document_amroma_invoice_body" inherit_id="account.report_invoice_document">
+        <xpath expr="//div[@class='page']/h2" position="replace">
+        </xpath>
+        <xpath expr="//div[@class='page']/p[1]" position="replace">
+        </xpath>
+        <xpath expr="//t[@t-set='address']" position="replace">
+            <style>
+                strong {
+                    color: black !important;
+                }
+            </style>
+            <t t-set="xml" t-value="o.l10n_mx_edi_get_xml_etree()"/>
+            <t t-set="tfd" t-value="o.l10n_mx_edi_get_tfd_etree(xml)"/>
+            <t t-set="tfd_original_string" t-value="o._get_l10n_mx_edi_cadena()"/>
+            <div name="invoice_address" style="font-size:14px !important; margin:auto; line-height: normal;">
+                <div class="row">
+                    <div class="col-2">
+                        <strong>Domicilio fiscal</strong>
+                    </div>
+                    <div class="col-3">
+                        <t t-if="xml.get('Version', '') == '3.3'">
+                            <strong>Régimen fiscal: </strong>
+                            <span t-esc="xml.Emisor.get('RegimenFiscal', '')" />
+                        </t>
+                    </div>
+                    <div class="col-3">
+                        <t t-if="xml.get('Version', '') == '3.3'">
+                            <strong>Método de Pago: </strong>
+                            <span t-esc="xml.get('formaDePago', xml.get('MetodoPago'))" />
+                        </t>
+                    </div>
+                    <div class="col-4">
+                        <strong>Comprobante fiscal digital</strong>
+                    </div>
+                </div>
+                <div class="row" name="company_fiscal_address">
+                    <div class="col-8">
+                        <span t-if="o.company_id.street_name">Calle: <t t-esc="o.company_id.street_name" /> </span>
+                        <span t-if="o.company_id.street2"><t t-esc="o.company_id.street2" /> </span>
+                        <span t-if="o.company_id.street_number">No <t t-esc="o.company_id.street_number" /> </span>
+                        <span t-if="o.company_id.street_number2">Int. <t t-esc="o.company_id.street_number2" />, </span>
+                        <span t-if="o.company_id.l10n_mx_edi_colony">Col. <t t-esc="o.company_id.l10n_mx_edi_colony" />, </span>
+                        <span t-if="o.company_id.zip">C.P. <t t-esc="o.company_id.zip" /> </span>
+                        <span t-if="o.company_id.l10n_mx_edi_locality"><t t-esc="o.company_id.l10n_mx_edi_locality" />, </span>
+                        <span t-if="o.company_id.city"><t t-esc="o.company_id.city" />, </span>
+                        <span t-if="o.company_id.state_id"><t t-esc="o.company_id.state_id.name" />, </span>
+                        <span t-if="o.company_id.country_id"><t t-esc="o.company_id.country_id.name" /></span>
+                    </div>
+                    <div class="col-4">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <strong>Serie:</strong> <span t-field="o.journal_id.code" />
+                                    </div>
+                                    <div class="col-8">
+                                        <strong>Folio:</strong> <span t-field="o.number" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <t t-if="o.origin">
+                                    <strong>Orden Compra:</strong> <span t-field="o.name" /> <span t-field="o.origin" />
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" name="expedition_place_saleman">
+                    <div class="col-8">
+                        <strong>Lugar de Expedición:</strong>
+                        <t t-if="o.stock_expedition_place">
+                            <span t-if="o.stock_expedition_place.street_name">Calle: <t t-esc="o.stock_expedition_place.street_name" /> </span>
+                            <span t-if="o.stock_expedition_place.street2"><t t-esc="o.stock_expedition_place.street2" /> </span>
+                            <span t-if="o.stock_expedition_place.street_number">No <t t-esc="o.stock_expedition_place.street_number" /> </span>
+                            <span t-if="o.stock_expedition_place.street_number2">Int. <t t-esc="o.stock_expedition_place.street_number2" />, </span>
+                            <span t-if="o.stock_expedition_place.l10n_mx_edi_colony">Col. <t t-esc="o.stock_expedition_place.l10n_mx_edi_colony" />, </span>
+                            <span t-if="o.stock_expedition_place.zip">C.P. <t t-esc="o.stock_expedition_place.zip" /> </span>
+                            <span t-if="o.stock_expedition_place.l10n_mx_edi_locality"><t t-esc="o.stock_expedition_place.l10n_mx_edi_locality" />, </span>
+                            <span t-if="o.stock_expedition_place.city"><t t-esc="o.stock_expedition_place.city" />, </span>
+                            <span t-if="o.stock_expedition_place.state_id"><t t-esc="o.stock_expedition_place.state_id.name" />, </span>
+                            <span t-if="o.stock_expedition_place.country_id"><t t-esc="o.stock_expedition_place.country_id.name" /></span>
+                        </t>
+                        <t t-if="not o.stock_expedition_place">
+                            <span t-if="o.company_id.street_name">Calle: <t t-esc="o.company_id.street_name" /> </span>
+                            <span t-if="o.company_id.street2"><t t-esc="o.company_id.street2" /> </span>
+                            <span t-if="o.company_id.street_number">No <t t-esc="o.company_id.street_number" /> </span>
+                            <span t-if="o.company_id.street_number2">Int. <t t-esc="o.company_id.street_number2" />, </span>
+                            <span t-if="o.company_id.l10n_mx_edi_colony">Col. <t t-esc="o.company_id.l10n_mx_edi_colony" />, </span>
+                            <span t-if="o.company_id.zip">C.P. <t t-esc="o.company_id.zip" /> </span>
+                            <span t-if="o.company_id.l10n_mx_edi_locality"><t t-esc="o.company_id.l10n_mx_edi_locality" />, </span>
+                            <span t-if="o.company_id.city"><t t-esc="o.company_id.city" />, </span>
+                            <span t-if="o.company_id.state_id"><t t-esc="o.company_id.state_id.name" />, </span>
+                            <span t-if="o.company_id.country_id"><t t-esc="o.company_id.country_id.name" /></span>
+                        </t>
+                    </div>
+                    <div class="col-4">
+                        <strong>VENDEDOR:</strong> <span t-field="o.user_id.name" />
+                    </div>
+                </div>
+                <div class="row" name="customer_and_invoice_date">
+                    <div class="col-8">
+                        <strong>Fact. # Cliente: <label style="text-decoration: underline;"><span t-field="o.partner_id.name"/></label></strong>
+                    </div>
+                    <div class="col-4">
+                        <strong>Fecha:</strong> <span t-esc="xml.get('fecha', xml.get('Fecha', ''))"/>
+                    </div>
+                </div>
+                <div class="row" name="customer_address">
+                    <div class="col-8">
+                        <span t-if="o.partner_id.street_name">Calle: <t t-esc="o.partner_id.street_name" /> </span>
+                        <span t-if="o.partner_id.street2"><t t-esc="o.partner_id.street2" /> </span>
+                        <span t-if="o.partner_id.street_number">No <t t-esc="o.partner_id.street_number" /> </span>
+                        <span t-if="o.partner_id.street_number2">Int. <t t-esc="o.partner_id.street_number2" />, </span>
+                        <span t-if="o.partner_id.l10n_mx_edi_colony">Col. <t t-esc="o.partner_id.l10n_mx_edi_colony" />, </span>
+                        <span t-if="o.partner_id.zip">C.P. <t t-esc="o.partner_id.zip" /> </span>
+                        <span t-if="o.partner_id.l10n_mx_edi_locality"><t t-esc="o.partner_id.l10n_mx_edi_locality" />, </span>
+                        <span t-if="o.partner_id.city"><t t-esc="o.partner_id.city" />, </span>
+                        <span t-if="o.partner_id.state_id"><t t-esc="o.partner_id.state_id.name" />, </span>
+                        <span t-if="o.partner_id.country_id"><t t-esc="o.partner_id.country_id.name" /></span>
+                        <span t-if="o.partner_id.vat"><t t-esc="o.partner_id.country_id.vat_label or 'RFC'"/>: <span t-esc="o.partner_id.l10n_mx_edi_get_customer_rfc()"/> </span>
+                        <span t-if="o.partner_id.phone"><t t-esc="o.partner_id.phone" /></span>
+                    </div>
+                    <div class="col-4 text-center">
+                        <p style="padding: 0; margin: 3px 0;">
+                            <strong>Forma de pago y Cuenta:</strong>
+                        </p>
+                        <span t-field="o.l10n_mx_edi_payment_method_id.code" /> <span t-field="o.l10n_mx_edi_payment_method_id.name" />
+                    </div>
+                </div>
+                <div class="row" name="customer_shipping_address_pm_label">
+                    <div class="col-8">
+                        <t t-if="o.partner_shipping_id">
+                            <strong>Enviar a:</strong>
+                            <span style="color: red;">
+                                <span t-if="o.partner_shipping_id.street_name">Calle: <t t-esc="o.partner_shipping_id.street_name" /> </span>
+                                <span t-if="o.partner_shipping_id.street2"><t t-esc="o.partner_shipping_id.street2" /> </span>
+                                <span t-if="o.partner_shipping_id.street_number">No <t t-esc="o.partner_shipping_id.street_number" /> </span>
+                                <span t-if="o.partner_shipping_id.street_number2">Int. <t t-esc="o.partner_shipping_id.street_number2" />, </span>
+                                <span t-if="o.partner_shipping_id.l10n_mx_edi_colony">Col. <t t-esc="o.partner_shipping_id.l10n_mx_edi_colony" />, </span>
+                                <span t-if="o.partner_shipping_id.zip">C.P. <t t-esc="o.partner_shipping_id.zip" /> </span>
+                                <span t-if="o.partner_shipping_id.l10n_mx_edi_locality"><t t-esc="o.partner_shipping_id.l10n_mx_edi_locality" />, </span>
+                                <span t-if="o.partner_shipping_id.city"><t t-esc="o.partner_shipping_id.city" />, </span>
+                                <span t-if="o.partner_shipping_id.state_id"><t t-esc="o.partner_shipping_id.state_id.name" />, </span>
+                                <span t-if="o.partner_shipping_id.country_id"><t t-esc="o.partner_shipping_id.country_id.name" /></span>
+                            </span>
+                        </t>
+                    </div>
+                    <div class="col-4 text-center">
+                        <strong>Uso del CFDI:</strong> [<span t-esc="o.l10n_mx_edi_usage" />] <span t-field="o.l10n_mx_edi_usage" />
+                    </div>
+                </div>
+                <t t-if="'AM ROMA' in o.company_id.name">
+                    <div class="row" name="warehouse">
+                        <div class="col-12 text-center">
+                            Almacén: <span t-if="o.stock_expedition_place" t-esc="o.stock_expedition_place.name" />
+                        </div>
+                    </div>
+                </t>
+                <div class="row" name="due_date_sales_email">
+                    <div class="col-12 text-center">
+                        <strong>Favor de enviar su comprobante de pago a mas tardar el vencimiento</strong> <label style="color: red;"><span t-field="o.date_due" t-options='{"format": "dd/MM/yy"}'/></label>&#160;&#160;&#160;&#160;&#160;&#160; <strong>a: <span>creditoycobranza@amroma.com<a href="mailto:creditoycobranza@amroma.com" style="color: #000;text-decoration: none;"><span/></a></span></strong>
+                    </div>
+                </div>
+                <div class="row" name="company_bank_account">
+                    <div class="col-4 text-center">
+                        <strong t-if="'AM ROMA' in o.company_id.name">BBVA Bancomer Cta: 0451101404</strong>
+                        <strong t-if="'CASTHELL' in o.company_id.name">BBVA Bancomer Cta: 0136050433</strong>
+                    </div>
+                    <div class="col-4 text-center">
+                        <strong t-if="'AM ROMA' in o.company_id.name">CLABE: 012180004511014046</strong>
+                        <strong t-if="'CASTHELL' in o.company_id.name">CLABE: 012180001360504331</strong>
+                    </div>
+                    <div class="col-4 text-center">
+                        <strong>FOB La mercancía viaja por cuenta y riesgo del cliente</strong>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="report_invoice_document_amroma_invoice_taxes_total" inherit_id="account.report_invoice_document">
+        <xpath expr="//div[@id='total']/div" position="before">
+            <t t-if="not o.refund_invoice_id">
+                <style>
+                    .willpay {
+                        font-size: 15px;
+                    }
+                    .colorIwillpay {
+                        color: #000080;
+                    }
+                    div.sign {
+                        border-top: 3px solid #000080;
+                    }
+                </style>
+                <div class="col-7 colorIwillpay">
+                    <h4 class="text-center"><strong><span style="color: #000080;margin-top: 0;">PAGARÉ</span></strong></h4>
+                    <div class="willpay" style="line-height: normal;">
+                        Debo y pagaré incondicionalmente a la orden de <span t-field="o.company_id.name" />
+                        la cantidad de <strong><span style="text-decoration: underline;color: #000080;" t-field="o.amount_total" /> <span style="text-decoration: underline;color: #000080;" t-esc="o.l10n_mx_edi_amount_to_text()" /></strong>
+                        En  el <span style="color: red;" t-field="o.date_due"/>. Causará intereses moratorios al tipo de 10% mensual, pagadero en esta ciudad juntamente
+                        con el principal.
+                        <br/><br/>
+                        <div class="sign text-center">
+                            Nombre y Firma
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <!--Delete fields and zones to base invoice document-->
+    <template id="report_invoice_document_amroma_invoice_body_delete" inherit_id="account.report_invoice_document">
+        <xpath expr="//div[hasclass('row','mt32','mb32')]" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[6]" position="after">
+            <th class="text-right" t-if="o.l10n_mx_edi_cfdi_uuid and xml.get('Version')">
+                <span>Clave</span>
+            </th>
+        </xpath>
+        <xpath expr="//table[@name='invoice_line_table']/tbody//tr[1]//td[6]" position="after">
+            <td class="text-right" t-if="o.l10n_mx_edi_cfdi_uuid and xml.get('Version')" style="font-size: 14px !important"><span t-field="line.uom_id.l10n_mx_edi_code_sat_id.code"/></td>
+        </xpath>
+    </template>
+
+    <!--Delete fields and zones to base invoice document-->
+    <template id="report_invoice_document_amroma_invoice_body_delete_table" inherit_id="l10n_mx_edi.report_invoice_document_mx">
+        <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[1]" position="attributes">
+            <attribute name="style">display:none</attribute>
+        </xpath>
+        <xpath expr="//table[@name='invoice_line_table']/tbody//tr[1]//td[1]" position="attributes">
+            <attribute name="style">display:none</attribute>
+        </xpath>
+        <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[5]" position="attributes">
+             <attribute name="style">display:none</attribute>
+        </xpath>
+        <xpath expr="//table[@name='invoice_line_table']/tbody//tr[1]//td[5]" position="attributes">
+            <attribute name="style">display:none</attribute>
+        </xpath>
+
+        <xpath expr="//table[@name='invoice_line_table']/tbody//tr[1]//td[2]" position="attributes">
+            <attribute name="style">font-size: 14px !important</attribute>
+        </xpath>
+        <xpath expr="//table[@name='invoice_line_table']/tbody//tr[1]//td[3]" position="attributes">
+            <attribute name="style">font-size: 14px !important</attribute>
+        </xpath>
+        <xpath expr="//table[@name='invoice_line_table']/tbody//tr[1]//td[4]" position="attributes">
+            <attribute name="style">font-size: 14px !important</attribute>
+        </xpath>
+        <xpath expr="//table[@name='invoice_line_table']/tbody//tr[1]//td[6]" position="attributes">
+            <attribute name="style">font-size: 14px !important</attribute>
+        </xpath>
+        <xpath expr="//table[@name='invoice_line_table']/tbody//tr[1]//td[8]" position="attributes">
+            <attribute name="style">font-size: 14px !important</attribute>
+        </xpath>
+        <xpath expr="//table[@name='invoice_line_table']/tbody//tr[1]//td[9]" position="attributes">
+            <attribute name="style">font-size: 14px !important</attribute>
+        </xpath>
+
+        <xpath expr="//table[@name='invoice_line_table']/tbody//tr[1]/t[2]/td" position="attributes">
+            <attribute name="style">font-size: 14px !important</attribute>
+        </xpath>
+        <xpath expr="//table[@name='invoice_line_table']/tbody//tr[1]/t[3]/td" position="attributes">
+            <attribute name="style">font-size: 14px !important</attribute>
+        </xpath>
+    </template>
+    <template id="report_invoice_document_amroma_shipping_addr_delete" inherit_id="sale.report_invoice_document_inherit_sale">
+         <xpath expr="//div[@groups='sale.group_delivery_invoice_address']" position="replace" />
+    </template>
+    <template id="report_invoice_document_amroma_footer_fields_delete" inherit_id="l10n_mx_edi.report_invoice_document_mx">
+        <xpath expr="//span[@t-esc='o.l10n_mx_edi_amount_to_text()']" position="replace" />
+    </template>
+
+    <!--Table for invoice lines style-->
+    <template id="report_invoice_document_amroma_invoice_body_table" inherit_id="account.report_invoice_document">
+        <xpath expr="//table[@name='invoice_line_table']" position="before">
+            <style>
+                table th {
+                    color: black;
+                }
+                thead {
+                    border-top: 4px solid black;
+                    border-bottom: 4px solid black;
+                }
+                tfoot {
+                    border-top: 4px solid black;
+                }
+            </style>
+        </xpath>
+        <xpath expr="//table[@name='invoice_line_table']" position="inside">
+            <tfoot style="border-top: 2px solid black; !important"/>
+        </xpath>
+        <xpath expr="//table[@name='invoice_line_table']/thead" position="attributes">
+            <attribute name="style">border-top: 2px solid black !important;
+                        border-bottom: 2px solid black !important;</attribute>
+        </xpath>
+    </template>
+</odoo>
